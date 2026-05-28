@@ -1,0 +1,46 @@
+services:
+  rest-api:
+    build: ./local-rest-api
+    container_name: local-rest-api
+    ports:
+      - "${REST_API_PORT:-3200}:3200"
+    environment:
+      PORT: "3200"
+      API_TOKEN: ${API_TOKEN:-mock-api-token-dev}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'node -e "fetch(''http://127.0.0.1:3200/health'').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"',
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  mcp-server:
+    build: ./internal-api-mcp-server
+    container_name: internal-api-mcp-server
+    ports:
+      - "${MCP_PORT:-3100}:3100"
+    environment:
+      INTERNAL_API_BASE_URL: http://rest-api:3200
+      INTERNAL_API_TOKEN: ${API_TOKEN:-mock-api-token-dev}
+      PORT: "3100"
+      MCP_PATH: /mcp
+      MCP_ACCESS_TOKEN: ${MCP_ACCESS_TOKEN:-mcp-dev-token}
+    depends_on:
+      rest-api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'node -e "fetch(''http://127.0.0.1:3100/health'').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"',
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped

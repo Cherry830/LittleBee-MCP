@@ -1,0 +1,46 @@
+# Render Blueprint — 双 Web Service
+# Dashboard: New → Blueprint → 连接本仓库
+# 文档: DEPLOY-RENDER.md
+
+services:
+  - type: web
+    name: local-rest-api
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: local-rest-api
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_TOKEN
+        generateValue: true
+
+  - type: web
+    name: internal-api-mcp
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: internal-api-mcp-server
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MCP_PATH
+        value: /mcp
+      - key: MCP_ACCESS_TOKEN
+        generateValue: true
+      - key: INTERNAL_API_BASE_URL
+        fromService:
+          type: web
+          name: local-rest-api
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: INTERNAL_API_TOKEN
+        fromService:
+          type: web
+          name: local-rest-api
+          envVarKey: API_TOKEN
