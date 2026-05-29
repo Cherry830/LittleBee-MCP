@@ -88,6 +88,13 @@ curl -s "https://internal-api-mcp-xxxx.onrender.com/health"
 
 并设置 `https://` 前缀（`hostport` 为 `host:port` 内网地址）。需 Render 付费计划支持 Private Service。
 
+## 常见构建失败
+
+若 Build log 出现 `tsc: command not found` 或 `sh: tsc: not found`：
+
+- 原因：Blueprint 里 `NODE_ENV=production` 会使 `npm ci` 跳过 `devDependencies`（含 `typescript`）。
+- 处理：根目录 `render.yaml` 已使用 `npm ci --include=dev && npm run build`；拉取最新 `main` 后 **Manual Deploy** 即可。
+
 ## 更新发布
 
 推送 Git 后 Render 自动重新部署；或在 Dashboard 对各服务点 **Manual Deploy → Deploy latest commit**。
