@@ -164,7 +164,7 @@ app.get("/v1/GetOrderDetail", (req, res) => {
   res.json(detail);
 });
 
-app.post("/v1/GetOrderDetail", (req, res) => {
+app.post("/v1/GetOrderDetail", (req: Request, res: Response) => {
   const body = req.body as { OrderID?: string };
   const orderId = body.OrderID;
   if (!orderId) {
@@ -181,7 +181,7 @@ app.post("/v1/GetOrderDetail", (req, res) => {
   res.json(detail);
 });
 
-app.post("/v1/orders", (req, res) => {
+app.post("/v1/orders", (req: Request, res: Response) => {
   const body = req.body as Partial<Order>;
   if (!body.userId || body.amount === undefined) {
     res.status(400).json({ error: "Invalid body", required: ["userId", "amount"] });
