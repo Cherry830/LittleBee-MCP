@@ -90,10 +90,18 @@ curl -s "https://internal-api-mcp-xxxx.onrender.com/health"
 
 ## 常见构建失败
 
-若 Build log 出现 `tsc: command not found` 或 `sh: tsc: not found`：
+### `tsc: command not found` / 找不到 `@types/express`
 
-- 原因：Blueprint 里 `NODE_ENV=production` 会使 `npm ci` 跳过 `devDependencies`（含 `typescript`）。
-- 处理：根目录 `render.yaml` 已使用 `npm ci --include=dev && npm run build`；拉取最新 `main` 后 **Manual Deploy** 即可。
+- 原因：`NODE_ENV=production` 时 `npm ci` 会跳过 `devDependencies`。
+- 处理：构建依赖已放入各服务 `package.json` 的 `dependencies`；并在 Dashboard **Settings → Build & Deploy → Build Command** 填：
+
+  `NPM_CONFIG_PRODUCTION=false npm ci && npm run build`
+
+  （若日志里仍是 `npm ci && npm run build`，说明 Blueprint 未同步，必须手改 Build Command。）
+
+### Blueprint 未同步 `render.yaml`
+
+首次用 Blueprint 创建后，改 `render.yaml` **不会**自动更新已有服务的 Build Command。请在各服务 Dashboard 手动改 Build Command，或 **Sync Blueprint**（若有）。
 
 ## 更新发布
 

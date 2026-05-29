@@ -61,13 +61,13 @@ function allOrdersForList(): Order[] {
 const app = express();
 app.use(express.json());
 
-app.get("/health", (_req, res) => {
+app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "ok", service: "local-rest-api", version: "1.0.0" });
 });
 
 app.use("/v1", requireAuth);
 
-app.get("/v1/users", (req, res) => {
+app.get("/v1/users", (req: Request, res: Response) => {
   const { page, limit, offset } = parsePage(req.query);
   const team = req.query.team ? String(req.query.team) : undefined;
   const q = req.query.q ? String(req.query.q).toLowerCase() : undefined;
@@ -93,7 +93,7 @@ app.get("/v1/users", (req, res) => {
   });
 });
 
-app.get("/v1/users/:id", (req, res) => {
+app.get("/v1/users/:id", (req: Request, res: Response) => {
   const user = users.find((u) => u.id === req.params.id);
   if (!user) {
     res.status(404).json({ error: "User not found", id: req.params.id });
@@ -102,7 +102,7 @@ app.get("/v1/users/:id", (req, res) => {
   res.json(user);
 });
 
-app.get("/v1/orders", (req, res) => {
+app.get("/v1/orders", (req: Request, res: Response) => {
   const { page, limit, offset } = parsePage(req.query);
   const status = req.query.status ? String(req.query.status) : undefined;
   const userId = req.query.userId ? String(req.query.userId) : undefined;
@@ -126,7 +126,7 @@ app.get("/v1/orders", (req, res) => {
   });
 });
 
-app.get("/v1/orders/:id", (req, res) => {
+app.get("/v1/orders/:id", (req: Request, res: Response) => {
   const orderId = req.params.id.trim();
   const order = orders.find((o) => o.id.toUpperCase() === orderId.toUpperCase());
   if (order) {
@@ -148,7 +148,7 @@ app.get("/v1/orders/:id", (req, res) => {
   });
 });
 
-app.get("/v1/GetOrderDetail", (req, res) => {
+app.get("/v1/GetOrderDetail", (req: Request, res: Response) => {
   const orderId = req.query.OrderID ? String(req.query.OrderID) : undefined;
   if (!orderId) {
     res.status(400).json({ error: "Missing required query parameter", OrderID: "string" });

@@ -9,8 +9,8 @@ services:
     plan: free
     region: oregon
     rootDir: local-rest-api
-    # NODE_ENV=production 时 npm ci 会省略 devDependencies，导致 tsc 不可用
-    buildCommand: npm ci --include=dev && npm run build
+    # Dashboard 若仍为 npm ci，需把 typescript/@types 放在 dependencies（见 package.json）
+    buildCommand: NPM_CONFIG_PRODUCTION=false npm ci && npm run build
     startCommand: npm start
     healthCheckPath: /health
     envVars:
@@ -25,7 +25,7 @@ services:
     plan: free
     region: oregon
     rootDir: internal-api-mcp-server
-    buildCommand: npm ci --include=dev && npm run build
+    buildCommand: NPM_CONFIG_PRODUCTION=false npm ci && npm run build
     startCommand: npm start
     healthCheckPath: /health
     envVars:
